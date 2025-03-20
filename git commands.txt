@@ -1,0 +1,1 @@
+git log --online --no-decorate [tag1] .. [tag2]
