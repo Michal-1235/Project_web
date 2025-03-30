@@ -109,7 +109,7 @@ function ProjectCreation2() {
                             </div>
                         </div>
 
-                        {/* Right Section: Status, Bug Report, and Finish Button */}
+                        {/* Right Section: Status, Bug Report*/}
                         <div className="col-auto text-end">
                             {/* Assignment Status */}
                             <div className="mb-2">
