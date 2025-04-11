@@ -1,6 +1,8 @@
 import MainPage from './pages/Main_page';
-import {ProjectCreation1, ProjectCreation2} from './pages/Project_creation1';
+import ProjectCreation1 from './pages/Project_creation1';
+import ProjectCreation2 from './pages/Project_creation2';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
 
 function App() {
     /*const [messages, setMessages] = useState([]);  
@@ -13,48 +15,52 @@ function App() {
       }, 1000);
       return () => clearInterval(fetchMessagesInterval);
     }, []);*/
+
+    
   
     return (
   
       <div className="container">
-
         <BrowserRouter>
           <Routes>
             <Route
               path="/"
-              element={<MainPage variables={variables} />}
+              element={<MainPage />}
             />
             <Route
               path="/create"
-              element={<ProjectCreation1 variables={variables}/>}
+              element={<ProjectCreation1/>}
             />
             <Route
               path="/create2"
-              element={<ProjectCreation2 variables={variables}/>}
+              element={<ProjectCreation2/>}
             />
+            {/*
             <Route
               path="/project"
-              element={<ProjectAssignments variables={variables}/>}
+              element={<ProjectAssignments/>}
             />
+            
             <Route
               path="/assignment"
-              element={<Assignment variables={variables}/>}
+              element={<Assignment/>}
             />
             <Route
               path="/completion"
-              element={<AssignmentCompletion variables={variables}/>}
+              element={<AssignmentCompletion/>}
             />
             <Route
               path="/bugreport"
-              element={<BugReport variables={variables}/>}
+              element={<BugReport/>}
             />
             <Route
               path="/newleader"
-              element={<NewTeamLeader variables={variables}/>}
+              element={<NewTeamLeader/>}
             />
+            */}
           </Routes>
         </BrowserRouter>
-
+        
       
       
       

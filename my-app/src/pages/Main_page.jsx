@@ -1,17 +1,19 @@
-import Create_project from './components/Create_project';
+import React from 'react';
+import Create_project from '../components/Create_project_button';
 
 function MainPage() {
-    <div className="container">
-        <Create_project />
-        {/* if admin */}
-        <AllProjects />
-        {/* else */}
-        <TeamLeaderProjects />
-        <TeamMemberProjects />
+    return (
+        <div className="container">
+            <Create_project />
+            {/* if admin 
+            <AllProjects />
 
-        <Progress />
-    </div>
+            <TeamLeaderProjects />
+            <TeamMemberProjects />
 
+            <Progress />*/}
+        </div>
+    );
 }
 
 export default MainPage;

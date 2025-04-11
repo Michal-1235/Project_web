@@ -1,23 +1,43 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function ProjectCreation2() {
+    {/* Get from DB the number of assignments and states to create array, needed to reprogram */}
+    //const number_of_assignmentsDB = 
+    //const array_of_assignments = 
+
+    const navigate = useNavigate();
+
     const [count, setCount] = useState(0);
     const [error, setError] = useState(""); // State to store error message
     const [assignments, setAssignments] = useState([]); // State to hold assignment data
 
+    
     const handleInputChange = (e) => {
         const value = Number(e.target.value);
         if (!isNaN(value) && value > 0) {
             setCount(value); // Update count only if it's a valid number and greater than 0
             setError(""); // Clear error message
 
-            // Initialize assignments array with empty objects for each assignment
-            setAssignments(Array.from({ length: value }, () => ({
-                title: "",
-                description: "",
-                deadline: "",
-                members: [],
-            })));
+            // Adjust the assignments array size without resetting existing data
+            setAssignments((prevAssignments) => {
+                if (value > prevAssignments.length) {
+                    // Add new empty assignments if the value is greater
+                    return [
+                        ...prevAssignments,
+                        ...Array.from({ length: value - prevAssignments.length }, () => ({
+                            title: "",
+                            description: "",
+                            deadline: "",
+                            members: [],
+                            status: "Not Created"
+                        })),
+                    ];
+                } else {
+                    // Trim the array if the value is smaller
+                    return prevAssignments.slice(0, value);
+                }
+            });
         } else {
             setCount(0); // Reset count to 0 for invalid input
             setAssignments([]); // Clear assignments array
@@ -31,15 +51,25 @@ function ProjectCreation2() {
         setAssignments(updatedAssignments); // Update the state
     };
 
+    function handleSubmit() {
+        console.log(assignments)
+
+        // backend API call to DB
+
+        navigate("/");
+    }
+
     return (
         <div className="container">
+            <p>Choose number of assignments:</p>
             {/* Input for number of assignments */}
             <div className="row justify-content-center mt-3">
                 <div className="col-auto">
                     <input
                         type="number"
                         className="form-control"
-                        placeholder="Choose number of assignments"
+                        placeholder="Number"
+                        defaultValue={0} // Set default value to 0
                         onChange={handleInputChange}
                     />
                     {error && <small className="text-danger">{error}</small>} {/* Display error message */}
@@ -102,6 +132,7 @@ function ProjectCreation2() {
                                         handleAssignmentChange(index, "members", selectedOptions);
                                     }}
                                 >
+                                    {/* get from DB */}
                                     <option value="member1">Member 1</option>
                                     <option value="member2">Member 2</option>
                                     <option value="member3">Member 3</option>
@@ -114,31 +145,31 @@ function ProjectCreation2() {
                             {/* Assignment Status */}
                             <div className="mb-2">
                                 <label htmlFor={`assignment-status-${index}`} className="form-label">Status</label>
-                                <select
-                                    id={`assignment-status-${index}`}
-                                    className="form-select"
-                                >
-                                    <option value="in-progress">In Progress</option>
-                                    <option value="completed">Completed</option>
-                                </select>
+                                    <p className="text-success">{assignment.status}</p>
+                                    {/* Another information from DB */}
+                                
                             </div>
 
-                            {/* Report Bug */}
+                        {(assignment.status === "Finished before deadline" || assignment.status === "Finished after deadline")  && (
                             <div className="mb-2">
                                 <button className="btn btn-warning">Report Bug</button>
-                                {/* This button opens a an another page for bug reporting */}
-                            </div>
-
+                                {/* This button opens another page for bug reporting */}
+                            </div>)
+                        }
                             
                         </div>
-                        {/* Finish Create Assignments */}
-                        <div className="mb-2">
-                                <button className="btn btn-success">Finish</button>
-                                {/* This button sends data to DB API */}
-                        </div>
+                        <hr></hr>
+                        
                     </div>
                 ))
             )}
+        {/* Finish Create Assignments */}
+        {count > 0 && (
+        <div className="mb-2 text-center">
+            <button className="btn btn-success" onClick={handleSubmit}>Finish</button>
+            {/* This button sends data to DB API */}
+        </div>
+        )}
         </div>
     );
 }
