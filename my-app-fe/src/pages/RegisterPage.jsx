@@ -4,6 +4,7 @@ import { checkUserExists, registerUser } from "../services/database_queries_BE";
 
 function RegisterPage() {
     const [username, setUsername] = useState('');
+    const [email, setEmail] = useState(''); // New state for email
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
@@ -12,6 +13,7 @@ function RegisterPage() {
     const navigate = useNavigate();
 
     const handleUsernameChange = (e) => setUsername(e.target.value);
+    const handleEmailChange = (e) => setEmail(e.target.value); // New handler for email
     const handlePasswordChange = (e) => setPassword(e.target.value);
     const handleConfirmPasswordChange = (e) => setConfirmPassword(e.target.value);
 
@@ -19,13 +21,19 @@ function RegisterPage() {
         e.preventDefault();
 
         // Basic validation
-        if (!username || !password || !confirmPassword) {
+        if (!username || !email || !password || !confirmPassword) {
             setError("All fields are required!");
             return;
         }
 
+
         if (password !== confirmPassword) {
             setError("Passwords do not match!");
+            return;
+        }
+
+        if (password.length < 8) {
+            setError("Password must be at least 8 characters long!");
             return;
         }
 
@@ -36,14 +44,23 @@ function RegisterPage() {
                 setError("Username already exists!");
                 return;
             }
-
+            const emailExists = await checkUserExists(email);
+            if (emailExists) {
+                setError("Email already exists!");
+                return;
+            }
             // Register the user
-            await registerUser(username, password);
+            await registerUser({ username, email, password }); // Include email in the payload
+            setError("");
             setSuccess("Registration successful! Redirecting to login...");
             setTimeout(() => navigate("/"), 2000); // Redirect to login page after 2 seconds
         } catch (err) {
             setError(err.message || "An error occurred during registration.");
         }
+    };
+
+    const handleBackToLogin = () => {
+        navigate("/"); // Navigate to the login page
     };
 
     return (
@@ -59,6 +76,17 @@ function RegisterPage() {
                             value={username}
                             onChange={handleUsernameChange}
                             placeholder="Enter your username"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="email">Email</label> 
+                        <input
+                            type="email"
+                            id="email"
+                            className="form-control"
+                            value={email}
+                            onChange={handleEmailChange}
+                            placeholder="Enter your email"
                         />
                     </div>
                     <div className="form-group">
@@ -89,6 +117,9 @@ function RegisterPage() {
                         Register
                     </button>
                 </form>
+                <button className="btn btn-secondary btn-block mt-2" onClick={handleBackToLogin}>
+                    Back to Login
+                </button>
             </div>
         </div>
     );

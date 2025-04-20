@@ -5,7 +5,8 @@
  */
 
 var app = require('../app');
-var debug = require('debug')('my-app-be:server');
+var pool = require('../config/db');
+var debug = require('debug')('not-twitter-be:server');
 var http = require('http');
 
 /**
@@ -28,6 +29,26 @@ var server = http.createServer(app);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+
+/**
+ * Close database pool on shutdown.
+ */
+const shutdown = (signal) => {
+  console.log(`\n Received ${signal}. Closing server and database pool...`);  
+  pool.end()  // close the database pool
+    .then(() => {
+      console.log("Database pool closed.");
+    })
+    .catch((error) => {
+      console.error("Error closing the database pool:", error);
+    })
+    .finally(() => {
+      process.exit(0); // exit the process
+    });
+};
+
+process.on("SIGINT", shutdown);  // Ctrl+C
+process.on("SIGTERM", shutdown); // Shutdown (e.g., cloud provider shutdown)
 
 /**
  * Normalize a port into a number, string, or false.
@@ -87,4 +108,8 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
+
+  console.log(`Server is listening on port ${addr.port}`);
 }
+
+

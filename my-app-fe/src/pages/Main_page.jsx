@@ -12,9 +12,9 @@ function MainPage() {
             <TeamLeaderProjects />
             <TeamMemberProjects />
 
-            <Progress />*/}
+            <Progress />
 
-            <TeamLeaderProjects />
+            <TeamLeaderProjects />*/}
     
         </div>
     );

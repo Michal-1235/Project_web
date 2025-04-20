@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from '../services/authService';
 
 function LoginPage(props) {
-    const [username, setUsername] = useState('');
+    const [username_email, setUsernameEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState(''); // Local state for error messages
 
-    const handleUsernameChange = (e) => setUsername(e.target.value);
+    const handleUsernameEmailChange = (e) => setUsernameEmail(e.target.value);
     const handlePasswordChange = (e) => setPassword(e.target.value);
 
     const navigate = useNavigate();
@@ -15,23 +16,23 @@ function LoginPage(props) {
         // prevent page reload
         e.preventDefault();
         // basic validation  
-        if (username === '' || password === '') {
-            props.setError('Username and password are required!');
+        if (username_email === '' || password === '') {
+            setError('Username and password are required!');
             return;
         }
 
-        login(username, password)
+        login(username_email, password)
             .then(() => {
-                props.setAuthStatus(true);
+                setError(''); // Clear error on successful login
+                props.setAuthStatus(true); // Update auth status in parent component
                 navigate('/main');
             })
             .catch((error) => {
                 console.log(error.message);
-                props.setError(error.message)
+                setError(error.message); // Set error message on failure
             });
-
-        // reset error message if the form is valid
-        props.setError('');
+       
+                
     };
 
     const handleRegister = () => {
@@ -41,15 +42,16 @@ function LoginPage(props) {
     return (
         <div className="row">
             <div className="col-sm-4">
+                
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label htmlFor="username">Username</label>
+                        <label htmlFor="username">Username or email</label>
                         <input
                             type="text"
                             id="username"
                             className="form-control"
-                            value={username}
-                            onChange={handleUsernameChange}
+                            value={username_email}
+                            onChange={handleUsernameEmailChange}
                             placeholder="Enter your username"
                         />
                     </div>
@@ -64,6 +66,12 @@ function LoginPage(props) {
                             placeholder="Enter your password"
                         />
                     </div>
+                    {/* Display error message if it exists */}
+                    {error && (
+                        <div className="alert alert-danger mt-2">
+                            {error}
+                        </div>
+                    )}
                     <button type="submit" className="btn btn-primary btn-block">
                         Login
                     </button>
@@ -73,9 +81,7 @@ function LoginPage(props) {
                 </button>
             </div>
         </div>
-
-
     );
-};
+}
 
 export default LoginPage;

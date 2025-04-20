@@ -1,5 +1,6 @@
 -- This file contains the PostgreSQL commands to create the necessary tables for the application.
 
+
 CREATE TABLE IF NOT EXISTS "public"."Status" (
     "Status_id" BIGINT PRIMARY KEY NOT NULL,
     "status" VARCHAR(50) NOT NULL UNIQUE
@@ -40,9 +41,9 @@ ON CONFLICT DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS "public"."Account" (
     "Account_id" BIGSERIAL PRIMARY KEY NOT NULL,
-    "Whole_name" VARCHAR(100) NOT NULL,
     "username" VARCHAR(100) NOT NULL UNIQUE,
     "password" VARCHAR(100) NOT NULL,
+    "email" VARCHAR(1000) NOT NULL UNIQUE,
     "is_admin" BOOL NOT NULL
 );
 
@@ -105,5 +106,11 @@ CREATE TABLE IF NOT EXISTS "public"."AssignmentMember" (
         REFERENCES "public"."ProjectTeamMember" ("Project_Team_Member_id") ON DELETE CASCADE,
     CONSTRAINT "AssignmentMember_Assignment_fk" FOREIGN KEY ("Assignment_id") 
         REFERENCES "public"."Assignment" ("Assignment_id") ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS "session" (
+    "sid" varchar NOT NULL PRIMARY KEY,
+    "sess" json NOT NULL,
+    "expire" timestamp(6) NOT NULL
 );
 

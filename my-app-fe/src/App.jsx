@@ -10,32 +10,32 @@ import RegisterPage from './pages/RegisterPage';
 
 function App() {
     const [authStatus, setAuthStatus] = useState(false); // Tracks if the user is logged in
-    const [error, setError] = useState(''); // Tracks error messages
+    const [adminStatus, setAdminStatus] = useState(false); // Tracks if the user is an admin
 
     return (
         <div className="container">
             <BrowserRouter>
-                <Header authStatus={authStatus} setAuthStatus={setAuthStatus} setError={setError} error={error} />
+                <Header authStatus={authStatus} setAuthStatus={setAuthStatus} adminStatus={adminStatus} setAdminStatus={setAdminStatus}  />
                 <Routes>
                     <Route
                         path="/"
-                        element={<LoginPage authStatus={authStatus} setAuthStatus={setAuthStatus} setError={setError} error={error} />}
+                        element={<LoginPage authStatus={authStatus} setAuthStatus={setAuthStatus} adminStatus={adminStatus} setAdminStatus={setAdminStatus}/>}
                     />
                     <Route
                         path="/Register"
-                        element={<RegisterPage />}
+                        element={<RegisterPage authStatus={authStatus} setAuthStatus={setAuthStatus} adminStatus={adminStatus} setAdminStatus={setAdminStatus} />}
                     />
                     <Route
                         path="/main"
-                        element={<MainPage />}
+                        element={<MainPage authStatus={authStatus} setAuthStatus={setAuthStatus} adminStatus={adminStatus} setAdminStatus={setAdminStatus}/>}
                     />
                     <Route
                         path="/create"
-                        element={<ProjectCreation1 />}
+                        element={<ProjectCreation1 authStatus={authStatus} setAuthStatus={setAuthStatus} adminStatus={adminStatus} setAdminStatus={setAdminStatus}/>}
                     />
                     <Route
                         path="/create2"
-                        element={<ProjectCreation2 />}
+                        element={<ProjectCreation2 authStatus={authStatus} setAuthStatus={setAuthStatus} adminStatus={adminStatus} setAdminStatus={setAdminStatus}/>}
                     />
                     {/* 
                     <Route

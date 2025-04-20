@@ -124,8 +124,8 @@ function ProjectCreation1() {
             </div>
 
             <div className="mb-3">
-                <button className="btn btn-danger" onClick={() => localStorage.clear()}>
-                    Clear All Data
+                <button className="btn btn-danger" onClick={() => navigate("/main")}>
+                    Go back
                 </button>
             </div>
         </div>
