@@ -12,8 +12,10 @@ function login(username, password) {
           throw new Error("Invalid credentials"); 
         }
         throw new Error("Error logging in");
-      }      
+      }    
+      return response.json();  
     })
+    
 }
 
 function logout() {
@@ -29,4 +31,14 @@ function logout() {
     
 }
 
-export { login, logout };
+function checkAuthStatus() {
+  return fetch("/api/auth", { method: "GET", credentials: "include" })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Error checking authentication status");
+      }
+      return response.json(); // Return the JSON response from the backend
+    });
+}
+
+export { login, logout, checkAuthStatus };

@@ -6,18 +6,16 @@ var router = express.Router();
 
 router.post("/", (req, res) => {
     const { username, password } = req.body;
-    console.log(req.body);
         get_user(username)
-        .then((result) => {   
-            console.log(result.rows);         
+        .then((result) => {          
             if (result.rows && result.rows.length === 1) {                
-                const userId = result.rows[0].user_id;
+                const Account_Id = result.rows[0].Account_id;
                 const hashedPassword = result.rows[0].password;    
                 const is_admin = result.rows[0].is_admin;            
                 comparePassword(password, hashedPassword)
                     .then((isValid) => {
                         if (isValid) {
-                            req.session.userId = userId;  // creates session
+                            req.session.Account_Id = Account_Id;  // creates session
                             req.session.is_admin = is_admin;  
                             if (is_admin) {
                                 return res.status(200).json({ is_admin: true }).end();  
@@ -51,7 +49,7 @@ router.post("/", (req, res) => {
 
 router.delete("/", (req, res) => {
     console.log(req.session);
-    if (req.session) {        
+    if (req.session && req.session.Account_Id) {        
         req.session.destroy((err) => {
             if (err) {
                 console.log(err);
@@ -68,5 +66,20 @@ router.delete("/", (req, res) => {
         return res.status(400).end();  // bad request - session doesn't exist
     }
 });
+
+router.get("/", (req, res) => {
+    console.log(req.session);
+    if (req.session && req.session.Account_Id) {
+      return res.status(200).json({
+        isLoggedIn: true,
+        is_admin: req.session.is_admin || false
+      });
+    } else {
+      return res.status(200).json({
+        isLoggedIn: false,
+        is_admin: false
+      });
+    }
+  });
 
 module.exports = router;

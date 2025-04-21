@@ -52,7 +52,9 @@ app.use(
             secure: process.env.STATUS === 'production',
             httpOnly: true,
             sameSite: process.env.STATUS === 'production'?'none':'lax',
-        }            
+            maxAge: 30 * 60 * 1000, // 30 minutes
+        },
+        rolling: true, // reset maxAge on every request            
              
     })    
 );    

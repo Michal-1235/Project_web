@@ -53,14 +53,14 @@ function RegisterPage() {
             await registerUser({ username, email, password }); // Include email in the payload
             setError("");
             setSuccess("Registration successful! Redirecting to login...");
-            setTimeout(() => navigate("/"), 2000); // Redirect to login page after 2 seconds
+            setTimeout(() => navigate("/login"), 2000); // Redirect to login page after 2 seconds
         } catch (err) {
             setError(err.message || "An error occurred during registration.");
         }
     };
 
     const handleBackToLogin = () => {
-        navigate("/"); // Navigate to the login page
+        navigate("/login"); // Navigate to the login page
     };
 
     return (

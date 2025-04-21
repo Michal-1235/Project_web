@@ -22,9 +22,10 @@ function LoginPage(props) {
         }
 
         login(username_email, password)
-            .then(() => {
+            .then((data) => {
                 setError(''); // Clear error on successful login
                 props.setAuthStatus(true); // Update auth status in parent component
+                props.setAdminStatus(data.is_admin); // Update admin status in parent component
                 navigate('/main');
             })
             .catch((error) => {
