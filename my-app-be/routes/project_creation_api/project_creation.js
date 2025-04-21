@@ -1,33 +1,58 @@
-var express = require('express'); // ESM: import
-var { getMessages, addMessage } = require('../../models/project_creation_api/project_creation')
+const express = require('express');
+const { getMembers, getProject, createProject, updateProject } = require('../../models/project_creation_api/project_creation');
 
-var router = express.Router(); // ESM: import
+const router = express.Router();
 
-router.get('/', function (req, res, next) {
-  getMessages().then(
-      (messages) => {
-          res.json(messages.rows);
-      }
-  ).catch(
-      (err) => {
-          console.log(err);
-          res.status(500);
-      }
-  );
+// GET: Fetch data (e.g., team members and project details if project_id is provided)
+router.get('/', async (req, res) => {
+    try {
+        if (!req.session || !req.session.Account_Id) {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
+
+        const { project_id } = req.query;
+
+        if (project_id) {
+            // Fetch project details along with members
+            const project = await getProject(project_id);
+            const members = await getUsers();
+            return res.status(200).json({ project: project.rows[0], teamMembers: members.rows });
+        } else {
+            // Fetch only members
+            const members = await getUsers();
+            return res.status(200).json({ project: null, teamMembers: members.rows });
+        }
+    } catch (err) {
+        console.error("Error fetching data:", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
 });
 
+// POST: Create or update a project based on the presence of project_id
+router.post('/', async (req, res) => {
+    try {
+        if (!req.session || !req.session.Account_Id) {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
 
-router.post('/', function (req, res, next) {
-  addMessage(req.body).then(
-      (r) => res.status(200)
-  ).catch(
-      (e) => {
-          console.log(e);
-          res.status(500);
-      }
-  );
+        const { id: project_id, title, description, deadline, members, leader } = req.body;
+
+        // If leader is null, set it to the Account_Id from the session
+        const projectLeader = leader || req.session.Account_Id;
+
+        if (project_id) {
+            // Update an existing project
+            const result = await updateProject({ project_id, title, description, deadline, members, projectLeaderleader });
+            return res.status(200).json({ message: "Project updated successfully", result });
+        } else {
+            // Create a new project
+            const result = await createProject({ title, description, deadline, members, projectLeader });
+            return res.status(201).json({ message: "Project created successfully", result });
+        }
+    } catch (err) {
+        console.error("Error processing project data:", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
 });
 
-
-
-module.exports = router; // ESM: export
+module.exports = router;

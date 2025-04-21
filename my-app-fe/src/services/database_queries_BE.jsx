@@ -1,11 +1,3 @@
-function getdata_ProjectCreation1() {
-    return Promise.resolve(true);
-}
-
-function submit_ProjectCreation1() {
-    return Promise.resolve(true);
-}
-
 function getdata_ProjectCreation2() {
     return Promise.resolve(true);
 }
@@ -63,13 +55,63 @@ function checkUserExists(username) {
 }
 
 
-//export {addMessage, getMessages, clearMessages};
+function getdata_ProjectCreation1(Project_id) {
+    // Include Project_id as a query parameter if it exists
+    const url = Project_id ? `/api/project_creation1?project_id=${encodeURIComponent(Project_id)}` : "/api/project_creation1";
+
+    return fetch(url, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`Failed to fetch project creation data: ${response.status}`);
+            }
+            return response.json(); // Parse the JSON response
+        })
+        .then((data) => {
+            const { teamMembers, project } = data; // project is empty if no project_id is provided
+            return { teamMembers, project }; // Return all relevant data
+        })
+        .catch((error) => {
+            console.error("Error fetching project creation data:", error);
+            throw new Error("Error communicating with server");
+        });
+}
+
+function submit_ProjectCreation1(projectData, Project_id) {
+    // Submit the project data to the backend
+    return fetch("/api/projects", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(projectData),
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("Failed to submit project data");
+            }
+            return response.json(); 
+        })
+        .then((result) => {
+            console.log("Project submitted successfully:", result);
+            return result;
+        })
+        .catch((error) => {
+            console.error("Error submitting project data:", error);
+            throw new Error("Error communicating with server");
+        });
+}
+
 export {
     getdata_ProjectCreation1,
     submit_ProjectCreation1,
     getdata_ProjectCreation2,
     submit_ProjectCreation2,
     checkUserExists,
-    registerUser
+    registerUser,
 };
 
