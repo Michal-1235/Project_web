@@ -5,17 +5,18 @@
 - Link na verejnú inštanciu projektu: <!-- Link na verejný hosting, kde je Váš projekt dostupný -->
 
 # Info o reportovanej verzii:
-- Tag: beta 0  <!-- Uviesť beta_cisloSubverzie, ak ste robili v bete zmeny pred termínom odovzdania -->
+- Tag: beta -0.1  <!-- Uviesť beta_cisloSubverzie, ak ste robili v bete zmeny pred termínom odovzdania -->
 
 # Info k testovaniu:     
 <!-- Uveďte credentials testovacích používateľov, ak sú potrebné na otestovanie Vašej bety. Uveďte aj akékoľvek iné relevantné informácie k testovaniu. Tieto informácie môžete alternatívne poslať aj e-mailom spolu s odovzdaním bety (napr. ak nechcete testovacie credentials zverejňovať). -->
+- Cez registraciu sa dá vytvorit užívateľov, heslá sú hashované a potom ostatné funckie závisia od session príhlaseného používateľa  
 
 # Postup, ako rozbehať vývojové prostredie 
 <!-- Postup pre lokálne rozbehanie vývojového prostredia (kto si trúfa, kľudne ako Docker file / Docker compose) -->
 
 # Stav implementácie:
 <!-- V bodoch spísať, ktoré funcionality sú už implementované, rozpracované, neimplementované vôbec -->
-- Implementovana session komunikacia s registraciou
+- Implementovana registracia session komunikacia s loginom 
 - Autentifikacia chranených ciest, zobrazenie podľa admin premennej
 - Stránky na vytvorenie projektu project creation implmentované s celou FE-BE komunikaciou, podľa toho či je admin alebo nie, implementované aj na editáciu projektov a assignmentov pre team leader alebo admin (tlacitko na volanie editácie nie je implementované )
 
