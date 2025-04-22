@@ -48,8 +48,8 @@ router.post("/", (req, res) => {
 });
 
 router.delete("/", (req, res) => {
-    console.log(req.session);
-    if (req.session && req.session.Account_Id) {        
+    console.log(req.session.Account_Id);
+    if (req.session.Account_Id) {        
         req.session.destroy((err) => {
             if (err) {
                 console.log(err);
@@ -68,8 +68,7 @@ router.delete("/", (req, res) => {
 });
 
 router.get("/", (req, res) => {
-    console.log(req.session);
-    if (req.session && req.session.Account_Id) {
+    if (req.session.Account_Id) {
       return res.status(200).json({
         isLoggedIn: true,
         is_admin: req.session.is_admin || false

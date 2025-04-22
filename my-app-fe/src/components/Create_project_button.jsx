@@ -5,7 +5,7 @@ function Create_project() {
     const navigate = useNavigate();
     
     const nav_project_creation = () => {
-        navigate("/create");
+        navigate("/create", {state: { project_id: null }});
     };
 
     return (

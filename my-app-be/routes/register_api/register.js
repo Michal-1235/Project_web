@@ -26,9 +26,9 @@ router.get('/', function (req, res, next) {
     );
 });
 
-router.post('/', async function (req, res, next) { // Add 'async' here
+router.post('/', async function (req, res, next) { 
     try {
-        req.body.password = await hashPassword(req.body.password); // Await works now
+        req.body.password = await hashPassword(req.body.password); 
         console.log(req.body);
         await register(req.body); 
         res.status(200).end(); 

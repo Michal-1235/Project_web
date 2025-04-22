@@ -2,19 +2,18 @@ import React from 'react';
 import Create_project from '../components/Create_project_button';
 import TeamLeaderProjects from '../components/Projects';
 
-function MainPage() {
+function MainPage({adminStatus}) {
     return (
         <div className="container">
             <Create_project />
-            {/* if admin 
+            {/* if addmin 
             <AllProjects />
-
+            
+            else
             <TeamLeaderProjects />
             <TeamMemberProjects />
 
-            <Progress />
-
-            <TeamLeaderProjects />*/}
+            <Progress />*/}
     
         </div>
     );

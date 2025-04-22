@@ -27,8 +27,9 @@ exports.getProject = async function (project_id) {
 };
 
 // Create a new project
-exports.createProject = async function ({ title, description, deadline, members, leader }) {
+exports.createProject = async function ({ title, description, deadline, members, projectLeader }) {
     const client = await pool.connect();
+    console.log("createProject", title, description, deadline, members, projectLeader);
     try {
         await client.query('BEGIN');
 
@@ -39,7 +40,7 @@ exports.createProject = async function ({ title, description, deadline, members,
             VALUES ($1, $2, CURRENT_DATE, $3, $4, 1, 1) -- Default Priority and Status
             RETURNING "Project_id"
         `;
-        const projectResult = await client.query(projectQuery, [title, description, deadline, leader]);
+        const projectResult = await client.query(projectQuery, [title, description, deadline, projectLeader]);
         const project_id = projectResult.rows[0].Project_id;
 
         // Insert members into ProjectTeamMember table
@@ -60,7 +61,7 @@ exports.createProject = async function ({ title, description, deadline, members,
 };
 
 // Update an existing project
-exports.updateProject = async function ({ project_id, title, description, deadline, members, leader }) {
+exports.updateProject = async function ({ project_id, title, description, deadline, members, projectLeader }) {
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
@@ -75,7 +76,7 @@ exports.updateProject = async function ({ project_id, title, description, deadli
                 "Account_id" = $4
             WHERE "Project_id" = $5
         `;
-        await client.query(projectQuery, [title, description, deadline, leader, project_id]);
+        await client.query(projectQuery, [title, description, deadline, projectLeader, project_id]);
 
         // Delete existing members from ProjectTeamMember table
         const deleteMembersQuery = `

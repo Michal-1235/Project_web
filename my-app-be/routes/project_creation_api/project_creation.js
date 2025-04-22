@@ -1,17 +1,17 @@
 const express = require('express');
-const { getMembers, getProject, createProject, updateProject } = require('../../models/project_creation_api/project_creation');
+const { getUsers, getProject, createProject, updateProject } = require('../../models/project_creation_api/project_creation');
 
 const router = express.Router();
 
 // GET: Fetch data (e.g., team members and project details if project_id is provided)
 router.get('/', async (req, res) => {
     try {
-        if (!req.session || !req.session.Account_Id) {
+        if (!req.session.Account_Id) {
             return res.status(401).json({ error: "Unauthorized" });
         }
 
         const { project_id } = req.query;
-
+        console.log(project_id);
         if (project_id) {
             // Fetch project details along with members
             const project = await getProject(project_id);
@@ -31,23 +31,23 @@ router.get('/', async (req, res) => {
 // POST: Create or update a project based on the presence of project_id
 router.post('/', async (req, res) => {
     try {
-        if (!req.session || !req.session.Account_Id) {
+        if (!req.session.Account_Id) {
             return res.status(401).json({ error: "Unauthorized" });
         }
 
         const { id: project_id, title, description, deadline, members, leader } = req.body;
+        
 
         // If leader is null, set it to the Account_Id from the session
         const projectLeader = leader || req.session.Account_Id;
-
         if (project_id) {
             // Update an existing project
-            const result = await updateProject({ project_id, title, description, deadline, members, projectLeaderleader });
-            return res.status(200).json({ message: "Project updated successfully", result });
+            const result = await updateProject({ project_id, title, description, deadline, members, projectLeader });
+            return res.status(200).json(result);
         } else {
             // Create a new project
             const result = await createProject({ title, description, deadline, members, projectLeader });
-            return res.status(201).json({ message: "Project created successfully", result });
+            return res.status(201).json(result);
         }
     } catch (err) {
         console.error("Error processing project data:", err);

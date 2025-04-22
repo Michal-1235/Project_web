@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import {Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import MainPage from './pages/Main_page';
 import ProjectCreation1 from './pages/Project_creation1';
 import ProjectCreation2 from './pages/Project_creation2';
@@ -45,78 +45,75 @@ function App() {
 
   return (
     <div className="container">
-        <Header
-          authStatus={authStatus}
-          setAuthStatus={setAuthStatus}
-          adminStatus={adminStatus}
-          setAdminStatus={setAdminStatus}
+      <Header
+        authStatus={authStatus}
+        setAuthStatus={setAuthStatus}
+        adminStatus={adminStatus}
+        setAdminStatus={setAdminStatus}
+      />
+      <Routes>
+        {/* Public Routes */}
+        <Route
+          path="/login"
+          element={
+            <LoginPage
+              authStatus={authStatus}
+              setAuthStatus={setAuthStatus}
+              adminStatus={adminStatus}
+              setAdminStatus={setAdminStatus}
+            />
+          }
         />
-        <Routes>
-          {/* Public Routes */}
-          <Route
-            path="/login"
-            element={
-              <LoginPage
-                authStatus={authStatus}
-                setAuthStatus={setAuthStatus}
-                adminStatus={adminStatus}
-                setAdminStatus={setAdminStatus}
-              />
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <RegisterPage
-                authStatus={authStatus}
-                setAuthStatus={setAuthStatus}
-                adminStatus={adminStatus}
-                setAdminStatus={setAdminStatus}
-              />
-            }
-          />
+        <Route
+          path="/register"
+          element={
+            <RegisterPage
+              authStatus={authStatus}
+              setAuthStatus={setAuthStatus}
+              adminStatus={adminStatus}
+              setAdminStatus={setAdminStatus}
+            />
+          }
+        />
 
-          {/* Protected Routes */}
-          <Route
-            path="/main"
-            element={
-              <ProtectedRoute
-                authStatus={authStatus}
-                setAuthStatus={setAuthStatus}
-                adminStatus={adminStatus}
-                setAdminStatus={setAdminStatus}
-              >
-                <MainPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/create"
-            element={
-              <ProtectedRoute
-                authStatus={authStatus}
-                setAuthStatus={setAuthStatus}
-                adminStatus={adminStatus}
-                setAdminStatus={setAdminStatus}
-              >
-                <ProjectCreation1 />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/create2"
-            element={
-              <ProtectedRoute
-                authStatus={authStatus}
-                setAuthStatus={setAuthStatus}
-                adminStatus={adminStatus}
-                setAdminStatus={setAdminStatus}
-              >
-                <ProjectCreation2 />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+        {/* Protected Routes */}
+        <Route
+          path="/main"
+          element={
+            <ProtectedRoute
+              authStatus={authStatus}
+              setAuthStatus={setAuthStatus}
+              adminStatus={adminStatus}
+              setAdminStatus={setAdminStatus}
+              element={MainPage} // Protected page with render prop
+            />
+          }
+        />
+        <Route
+          path="/create"
+          element={
+            <ProtectedRoute
+              authStatus={authStatus}
+              setAuthStatus={setAuthStatus}
+              adminStatus={adminStatus}
+              setAdminStatus={setAdminStatus}
+              element={ProjectCreation1} // Protected page with render prop
+            />
+          }
+        />
+        <Route
+          path="/create2"
+          element={
+            <ProtectedRoute
+              authStatus={authStatus}
+              setAuthStatus={setAuthStatus}
+              adminStatus={adminStatus}
+              setAdminStatus={setAdminStatus}
+              element={ProjectCreation2} // Protected page with render prop
+            />
+          }
+        />
+      </Routes>
     </div>
   );
 }

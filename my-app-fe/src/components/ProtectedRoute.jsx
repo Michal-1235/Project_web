@@ -1,37 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { checkAuthStatus } from "../services/authService";
 
-function ProtectedRoute(props) {
+function ProtectedRoute({ element: Component, ...props }) {
   const [isLoading, setIsLoading] = useState(true);
-  const location = useLocation(); // Hook to detect route changes
+  const location = useLocation();
 
   useEffect(() => {
     checkAuthStatus()
       .then((status) => {
-        props.setAuthStatus(status.isLoggedIn); // Update global auth status
-        props.setAdminStatus(status.is_admin); // Update global admin status
+        props.setAuthStatus(status.isLoggedIn);
+        props.setAdminStatus(status.is_admin);
         setIsLoading(false);
       })
       .catch((error) => {
         console.error("Error checking authentication status:", error);
-        props.setAuthStatus(false); // Set global auth status to false
+        props.setAuthStatus(false);
         setIsLoading(false);
       });
   }, [location]);
 
-  if (isLoading) {
-    // Show a loading spinner or placeholder while checking authentication
-    return <div>Loading...</div>;
-  }
+  if (isLoading) return <div>Loading...</div>;
 
-  if (!props.authStatus) {
-    // Redirect to login page if not authenticated
-    return <Navigate to="/login" replace />;
-  }
+  if (!props.authStatus) return <Navigate to="/login" replace />;
 
-  // Pass adminStatus to children as a prop
-  return React.cloneElement(props.children, { adminStatus: props.adminStatus });
+  // Render the protected component with additional props
+  return <Component adminStatus={props.adminStatus} />;
 }
 
 export default ProtectedRoute;

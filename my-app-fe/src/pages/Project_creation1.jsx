@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { getdata_ProjectCreation1, submit_ProjectCreation1 } from "../services/database_queries_BE";
 
-function ProjectCreation1({ adminStatus, Project_id }) {
+function ProjectCreation1({ adminStatus }) {
     const teamTitleRef = useRef(null);
     const teamDescriptionRef = useRef(null);
     const teamDeadlineRef = useRef(null);
@@ -14,18 +14,16 @@ function ProjectCreation1({ adminStatus, Project_id }) {
     const [isLoading, setIsLoading] = useState(true); // Loading state
 
     const navigate = useNavigate();
-
-    const getTomorrowDate = () => {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        return tomorrow.toISOString().split("T")[0]; // Format as YYYY-MM-DD
-    };
+    const location = useLocation(); 
+    const Project_id = location.state?.project_id; // Get project ID from state 
 
     useEffect(() => {
+        
         // Fetch team data and project data when the component loads
         getdata_ProjectCreation1(Project_id)
             .then((data) => {
                 setTeamData(data.teamMembers); // Always set team members for dropdown
+                console.log("Fetched team data:", data.teamMembers); // Debugging line to check fetched team data
                 if (data.project) {
                     setExistingProject(data.project); // Set existing project data if it exists
                     // Pre-fill the form with existing project data
@@ -44,11 +42,24 @@ function ProjectCreation1({ adminStatus, Project_id }) {
                 setIsLoading(false); // Data has been loaded
             })
             .catch((error) => {
-                console.error("Error fetching data for Project Creation 1:", error);
-                alert("Failed to load data. Please try again later.");
-                navigate("/main");
-            });
-    }, [Project_id]);
+                if (error.message === "Unauthorized") {
+                  console.error("Unauthorized access:", error);
+                  alert("Unauthorized access. Please log in again.");
+                  navigate("/login"); // Redirect to login on 401
+                } else {
+                  console.error("Error:", error);
+                  alert("Error fetching data. Please try again later.");
+                }
+              });
+    }, []);
+
+    const getTomorrowDate = () => {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        return tomorrow.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+    };
+
+    
 
     function handleSubmit() {
         if (
@@ -73,19 +84,26 @@ function ProjectCreation1({ adminStatus, Project_id }) {
 
         // Submit the project data
         submit_ProjectCreation1(projectData)
-            .then(() => {
+            .then((data) => {
                 alert(existingProject ? "Changes saved successfully!" : "Project created successfully!");
                 // Navigate based on whether the project is new or existing
                 if (existingProject) {
                     navigate("/main"); // Navigate to main if editing an existing project
                 } else {
-                    navigate("/create2"); // Navigate to create2 if creating a new project
+                    console.log("Project ID:", data); // Log the project ID for debugging
+                    navigate("/create2", {state: { project_id: data.project_id }}); // Navigate to create2 if creating a new project
                 }
             })
             .catch((error) => {
-                console.error("Error submitting project:", error);
-                alert("Failed to save changes. Please try again.");
-            });
+                if (error.message === "Unauthorized") {
+                  console.error("Unauthorized access:", error);
+                  alert("Unauthorized access. Please log in again.");
+                  navigate("/login"); // Redirect to login on 401
+                } else {
+                  console.error("Error:", error);
+                  alert("Error submitting data. Please try again later.");
+                }
+              });
     }
 
     if (isLoading) {

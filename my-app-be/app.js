@@ -9,9 +9,11 @@ const { config } = require('./config/config.js');
 
 
 
-//var projectcreationRouter = require('./routes/project_creation_api/project_creation');
+var projectcreation1Router = require('./routes/project_creation_api/project_creation');
 var registerRouter = require('./routes/register_api/register');
 var authRouter = require('./routes/auth_api/auth');
+var projectcreation2Router = require('./routes/project_creation_api/project_creation2');
+
 
 require('dotenv').config();
 
@@ -60,6 +62,8 @@ app.use(
 );    
 app.use('/api/register', registerRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/project_creation1', projectcreation1Router);
+app.use('/api/project_creation2', projectcreation2Router);
 
 
 module.exports = app;

@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS "public"."Project" (
     "project_description" TEXT NOT NULL,
     "start_time" DATE NOT NULL,
     "end_time" DATE NOT NULL,
-    "finished_time" DATE NOT NULL,
+    "finished_time" DATE,
     CONSTRAINT "Project_Account_fk" FOREIGN KEY ("Account_id") 
         REFERENCES "public"."Account" ("Account_id") ON DELETE CASCADE,
     CONSTRAINT "Project_Priority_fk" FOREIGN KEY ("Priority_id") 
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS "public"."Assignment" (
     "assignment_description" TEXT NOT NULL,
     "start_time" DATE NOT NULL,
     "end_time" DATE NOT NULL,
-    "finished_time" DATE NOT NULL,
+    "finished_time" DATE,
     CONSTRAINT "Assignment_Project_fk" FOREIGN KEY ("Project_id") 
         REFERENCES "public"."Project" ("Project_id") ON DELETE CASCADE,
     CONSTRAINT "Assignment_Assignment_fk" FOREIGN KEY ("Parent_Assignment_id") 
