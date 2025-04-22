@@ -17,10 +17,10 @@
 # Vykonaná práca:
 <!-- Ku každému bodu je nutné priradiť číslo commitu, ktorý ho implementuje - samostatný commit pre každý bod! -->
 
-Registration implemented, Login through Session implemented, BE-FE, database; functional  - 6b3e449d6575e47f2415bc57b85d1af0c4561d96
-Authenticate at the start of application, Authenticate protected routes - 2d921c5f1fede4648dca29a2d0699224f57a7953
-ProjectCreation1 file with DB communication and admin implementation - 77b8fb2028c82ab2ed0a82e8fd6cf48a4235994f
-Project Creation Assignment - ProjectCreation1, ProjectCreation2 Admin Editation Functional FE-BE with api calls on backend - b747758f079b57cebeb0dfb5dc67d83fc01f56f7
+- Registration implemented, Login through Session implemented, BE-FE, database; functional  - 6b3e449d6575e47f2415bc57b85d1af0c4561d96
+- Authenticate at the start of application, Authenticate protected routes - 2d921c5f1fede4648dca29a2d0699224f57a7953
+- ProjectCreation1 file with DB communication and admin implementation - 77b8fb2028c82ab2ed0a82e8fd6cf48a4235994f
+- Project Creation Assignment - ProjectCreation1, ProjectCreation2 Admin Editation Functional FE-BE with api calls on backend - b747758f079b57cebeb0dfb5dc67d83fc01f56f7
  
 
 
