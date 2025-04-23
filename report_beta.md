@@ -2,7 +2,7 @@
 - Meno a priezvisko: Michal Chymo
 - Názov projektu: Issue Tracker
 - Link na repozitár:  https://github.com/Michal-1235/Project_web.git                <!-- Link na Váš GitHub repozitár -->
-- Link na verejnú inštanciu projektu: <!-- Link na verejný hosting, kde je Váš projekt dostupný -->
+- Link na verejnú inštanciu projektu: https://project-web-1-16vj.onrender.com <!-- Link na verejný hosting, kde je Váš projekt dostupný -->
 
 # Info o reportovanej verzii:
 - Tag: beta -0.1  <!-- Uviesť beta_cisloSubverzie, ak ste robili v bete zmeny pred termínom odovzdania -->
