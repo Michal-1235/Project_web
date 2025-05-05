@@ -16,7 +16,7 @@ function ProjectCreation2() {
   const [error, setError] = useState("");
   const location = useLocation(); 
   const Project_id = location.state?.project_id; // Get project ID from state 
-  console.log("Project ID:", Project_id); // Debugging line to check the project ID
+
 
   // Function to convert ISO string to YYYY-MM-DD format and add one day
   const formatDateForInput = (isoString, offsetDays = 1) => {
@@ -82,6 +82,13 @@ function ProjectCreation2() {
     }
   };
 
+  const getTomorrowDate = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+  };
+
+
   const handleAssignmentChange = (index, field, value) => {
     const updated = [...assignments];
     updated[index][field] = value;
@@ -91,7 +98,7 @@ function ProjectCreation2() {
   const handleSubmit = async () => {
     const issues = assignments
       .map((a, i) => {
-        if (!a.title || !a.description || !a.deadline || a.members.length === 0)
+        if (!a.title || !a.description || !a.deadline)
           return `Assignment ${i + 1} is incomplete`;
         if (a.deadline > formatDateForInput(projectDeadline))
           return `Assignment ${i + 1} deadline exceeds project deadline`;
@@ -157,6 +164,7 @@ function ProjectCreation2() {
                 type="date"
                 className="form-control"
                 max={projectDeadline ? formatDateForInput(projectDeadline) : ""} // Dynamically set max
+                min={getTomorrowDate()}
                 value={assignment.deadline}
                 onChange={(e) => handleAssignmentChange(index, "deadline", e.target.value)}
               />

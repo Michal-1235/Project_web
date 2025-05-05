@@ -37,6 +37,7 @@ function checkAuthStatus() {
       if (!response.ok) {
         throw new Error("Error checking authentication status");
       }
+      
       return response.json(); // Return the JSON response from the backend
     });
 }

@@ -139,7 +139,7 @@ function getdata_ProjectCreation1(Project_id) {
         });
 }
 
-function submit_ProjectCreation1(projectData, Project_id) {
+function submit_ProjectCreation1(projectData) {
 
     // Submit the project data to the backend
     return fetch("/api/project_creation1", {
@@ -174,7 +174,7 @@ function submit_ProjectCreation1(projectData, Project_id) {
 
 // Fetch projects where the current user is the team leader
 function getProjectsAsTeamLeader() {
-    return fetch('/api/projects/teamleader', {
+    return fetch('/api/main_page/teamleader', {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -194,7 +194,7 @@ function getProjectsAsTeamLeader() {
 
 // Fetch projects where the current user is a member
 function getProjectsAsMember() {
-    return fetch('/api/projects/member', {
+    return fetch('/api/main_page/member', {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -214,7 +214,7 @@ function getProjectsAsMember() {
 
 // Fetch all projects (admin-only)
 function getAllProjects() {
-    return fetch('/api/projects/all', {
+    return fetch('/api/main_page/all', {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -292,78 +292,155 @@ function getAllAssignments(project_id) {
     });
 }
 
-// Change project team leader
-function changeProjectTeamLeader(project_id, new_leader_id) {
-    return fetch('/api/projects/change-teamleader', {
+// Fetch team members for a project
+function getTeamMembers(project_id) {
+    return fetch(`/api/projects/${project_id}/team-members`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+        .then((response) => {
+            if (!response.ok) throw new Error("Failed to fetch team members");
+            return response.json();
+        })
+        .then((data) => data.members)
+        .catch((error) => {
+            console.error("Error fetching team members:", error);
+            throw error;
+        });
+}
+
+// Update the team leader for a project
+function updateTeamLeader(project_id, newLeaderId) {
+    return fetch(`/api/projects/${project_id}/update-leader`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-            project_id,
-            new_leader_id
-        }),
+        body: JSON.stringify({ newLeaderId }),
     })
-    .then((response) => {
-        if (response.status === 401) throw new Error("Unauthorized");
-        if (!response.ok) throw new Error("Failed to change team leader");
-        return response.json();
+        .then((response) => {
+            if (!response.ok) throw new Error("Failed to update team leader");
+            return response.json();
+        })
+        .catch((error) => {
+            console.error("Error updating team leader:", error);
+            throw error;
+        });
+}
+
+function getTeamLeader(project_id) {
+    return fetch(`/api/projects/${project_id}/details`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
     })
-    .then(data => data.success)
-    .catch((error) => {
-        console.error("Error changing team leader:", error);
-        throw new Error("Error communicating with server");
-    });
+        .then((response) => {
+            if (!response.ok) throw new Error('Failed to fetch project details');
+            return response.json();
+        })
+        .then((data) => data)
+        .catch((error) => {
+            console.error('Error fetching project details:', error);
+            throw error;
+        });
+}
+
+// Fetch assignment details
+function fetchAssignmentDetails(assignmentId) {
+    return fetch(`/api/assignments/${assignmentId}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+    })
+        .then((response) => {
+            if (!response.ok) throw new Error('Failed to fetch assignment details');
+            return response.json();
+        })
+        .catch((error) => {
+            console.error('Error fetching assignment details:', error);
+            throw error;
+        });
+}
+
+// Save assignment
+function saveAssignment(assignmentId, updatedAssignment) {
+    return fetch(`/api/assignments/${assignmentId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedAssignment),
+    })
+        .then((response) => {
+            if (!response.ok) throw new Error('Failed to save assignment');
+            return response.json();
+        })
+        .catch((error) => {
+            console.error('Error saving assignment:', error);
+            throw error;
+        });
 }
 
 // Report assignment completion
-function reportAssignmentCompletion(assignment_id, description) {
-    return fetch('/api/assignments/complete', {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            assignment_id,
-            description
-        }),
+function reportAssignmentCompletion(assignmentId) {
+    return fetch(`/api/assignments/${assignmentId}/complete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
     })
-    .then((response) => {
-        if (response.status === 401) throw new Error("Unauthorized");
-        if (!response.ok) throw new Error("Failed to report completion");
-        return response.json();
+        .then((response) => {
+            if (!response.ok) throw new Error('Failed to report assignment completion');
+            return response.json();
+        })
+        .catch((error) => {
+            console.error('Error reporting assignment completion:', error);
+            throw error;
+        });
+}
+
+// Take assignment
+function takeAssignment(assignmentId, accountId) {
+    return fetch(`/api/assignments/${assignmentId}/take`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ Account_id: accountId }),
     })
-    .then(data => data.success)
-    .catch((error) => {
-        console.error("Error reporting completion:", error);
-        throw new Error("Error communicating with server");
-    });
+        .then((response) => {
+            if (!response.ok) throw new Error('Failed to take assignment');
+            return response.json();
+        })
+        .catch((error) => {
+            console.error('Error taking assignment:', error);
+            throw error;
+        });
 }
 
 // Report a bug as a parent assignment
-function reportBug(project_id, parent_assignment_id, bugData) {
+function submitBugReport(project_id, parent_assignment_id, bugData) {
     return fetch('/api/assignments/report-bug', {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            project_id,
-            parent_assignment_id,
-            ...bugData
-        }),
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        project_id,
+        parent_assignment_id, // Pass as a scalar value
+        ...bugData, // Spread the bugData object to include title, description, deadline, and members
+      }),
     })
-    .then((response) => {
+      .then((response) => {
         if (response.status === 401) throw new Error("Unauthorized");
-        if (!response.ok) throw new Error("Failed to report bug");
+        if (!response.ok) throw new Error("Failed to submit bug report");
         return response.json();
-    })
-    .then(data => data.newAssignment)
-    .catch((error) => {
-        console.error("Error reporting bug:", error);
+      })
+      .then((data) => {
+        console.log("Bug report submitted successfully:", data);
+        return data;
+      })
+      .catch((error) => {
+        console.error("Error submitting bug report:", error);
         throw new Error("Error communicating with server");
-    });
-}
+      });
+  }
 
 // Add these to the existing export block
 export {
@@ -373,18 +450,21 @@ export {
     submit_ProjectCreation2,
     checkUserExists,
     registerUser,
-    /*
     getProjectsAsTeamLeader,
     getProjectsAsMember,
     getAllProjects,
     getTakenAssignments,
     getNotTakenAssignments,
     getAllAssignments,
-    changeProjectTeamLeader,
+    getTeamMembers,
+    updateTeamLeader,
+    getTeamLeader,
+    fetchAssignmentDetails,
+    saveAssignment,
+    takeAssignment,
     reportAssignmentCompletion,
-    reportBug*/
+    submitBugReport,
 };
 
-export {
-};
+
 

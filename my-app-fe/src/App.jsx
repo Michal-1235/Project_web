@@ -3,10 +3,14 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import MainPage from './pages/Main_page';
 import ProjectCreation1 from './pages/Project_creation1';
 import ProjectCreation2 from './pages/Project_creation2';
+import Project_assignments from './pages/Project_assignments';
+import NewTeamLeader from './pages/NewTeamLeader';
 import Header from './components/Header';
+import Assignment from './pages/Assignment';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import BugReport from './pages/BugReport';
 import { checkAuthStatus } from './services/authService';
 
 function App() {
@@ -110,6 +114,54 @@ function App() {
               adminStatus={adminStatus}
               setAdminStatus={setAdminStatus}
               element={ProjectCreation2} // Protected page with render prop
+            />
+          }
+        />
+      <Route
+          path="/project"
+          element={
+            <ProtectedRoute
+              authStatus={authStatus}
+              setAuthStatus={setAuthStatus}
+              adminStatus={adminStatus}
+              setAdminStatus={setAdminStatus}
+              element={Project_assignments} // Protected page with render prop
+            />
+          }
+        />
+        <Route
+          path="/newleader"
+          element={
+            <ProtectedRoute
+              authStatus={authStatus}
+              setAuthStatus={setAuthStatus}
+              adminStatus={adminStatus}
+              setAdminStatus={setAdminStatus}
+              element={NewTeamLeader} // Protected page with render prop
+            />
+          }
+        />
+        <Route
+          path="/assignment"
+          element={
+            <ProtectedRoute
+              authStatus={authStatus}
+              setAuthStatus={setAuthStatus}
+              adminStatus={adminStatus}
+              setAdminStatus={setAdminStatus}
+              element={Assignment} // Protected page with render prop
+            />
+          }
+        />
+        <Route
+          path="/bug"
+          element={
+            <ProtectedRoute
+              authStatus={authStatus}
+              setAuthStatus={setAuthStatus}
+              adminStatus={adminStatus}
+              setAdminStatus={setAdminStatus}
+              element={BugReport} // Protected page with render prop
             />
           }
         />

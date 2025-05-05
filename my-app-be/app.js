@@ -13,6 +13,10 @@ var projectcreation1Router = require('./routes/project_creation_api/project_crea
 var registerRouter = require('./routes/register_api/register');
 var authRouter = require('./routes/auth_api/auth');
 var projectcreation2Router = require('./routes/project_creation_api/project_creation2');
+var mainPageRouter = require('./routes/main_page_api/main_page');
+var projectRouter = require('./routes/project_api/project');
+var teamLeaderChangeRouter = require('./routes/team_leader_change_api/team_leader_change');
+
 
 
 require('dotenv').config();
@@ -64,6 +68,9 @@ app.use('/api/register', registerRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/project_creation1', projectcreation1Router);
 app.use('/api/project_creation2', projectcreation2Router);
+app.use('/api/main_page', mainPageRouter);
+app.use('/api/assignments', projectRouter);
+app.use('/api/projects', teamLeaderChangeRouter);
 
 
 module.exports = app;

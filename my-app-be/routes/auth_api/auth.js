@@ -17,6 +17,7 @@ router.post("/", (req, res) => {
                         if (isValid) {
                             req.session.Account_Id = Account_Id;  // creates session
                             req.session.is_admin = is_admin;  
+                            console.log(Account_Id, is_admin);
                             if (is_admin) {
                                 return res.status(200).json({ is_admin: true }).end();  
                             }
@@ -62,7 +63,6 @@ router.delete("/", (req, res) => {
             }
         });
     } else {
-        console.log("Session does not exist");
         return res.status(400).end();  // bad request - session doesn't exist
     }
 });
@@ -71,12 +71,14 @@ router.get("/", (req, res) => {
     if (req.session.Account_Id) {
       return res.status(200).json({
         isLoggedIn: true,
-        is_admin: req.session.is_admin || false
+        is_admin: req.session.is_admin || false,
+        Account_Id: req.session.Account_Id
       });
     } else {
       return res.status(200).json({
         isLoggedIn: false,
-        is_admin: false
+        is_admin: false,
+        Account_Id: null
       });
     }
   });

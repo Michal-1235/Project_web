@@ -4,6 +4,7 @@ import { checkAuthStatus } from "../services/authService";
 
 function ProtectedRoute({ element: Component, ...props }) {
   const [isLoading, setIsLoading] = useState(true);
+  const [Account_id, setAccount_id] = useState(null); 
   const location = useLocation();
 
   useEffect(() => {
@@ -11,6 +12,7 @@ function ProtectedRoute({ element: Component, ...props }) {
       .then((status) => {
         props.setAuthStatus(status.isLoggedIn);
         props.setAdminStatus(status.is_admin);
+        setAccount_id(status.Account_Id); 
         setIsLoading(false);
       })
       .catch((error) => {
@@ -25,7 +27,7 @@ function ProtectedRoute({ element: Component, ...props }) {
   if (!props.authStatus) return <Navigate to="/login" replace />;
 
   // Render the protected component with additional props
-  return <Component adminStatus={props.adminStatus} />;
+  return <Component adminStatus={props.adminStatus} Account_id = {Account_id} />;
 }
 
 export default ProtectedRoute;

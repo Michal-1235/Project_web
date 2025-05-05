@@ -26,6 +26,7 @@ function LoginPage(props) {
                 setError(''); // Clear error on successful login
                 props.setAuthStatus(true); // Update auth status in parent component
                 props.setAdminStatus(data.is_admin); // Update admin status in parent component
+                console.log("here",data.is_admin);
                 navigate('/main');
             })
             .catch((error) => {
