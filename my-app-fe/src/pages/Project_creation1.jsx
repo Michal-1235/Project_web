@@ -1,271 +1,193 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { getdata_ProjectCreation1, submit_ProjectCreation1 } from "../services/database_queries_BE";
-import { format } from 'date-fns';
+import {
+    getdata_ProjectCreation1,
+    submit_ProjectCreation1,
+} from "../services/database_queries_BE";
+import { format } from "date-fns";
 
 function ProjectCreation1({ adminStatus, Account_id }) {
-    const teamTitleRef = useRef(null);
-    const teamDescriptionRef = useRef(null);
-    const teamDeadlineRef = useRef(null);
-    const teamMembersRef = useRef(null);
-    const teamLeaderRef = useRef(null);
-
-    const [teamData, setTeamData] = useState([]); // Single state for both members and leaders
-    const [existingProject, setExistingProject] = useState(false); // State to say if the project already exists
-    const [isLoading, setIsLoading] = useState(true); // Loading state
+    const [teamTitle, setTeamTitle] = useState("");
+    const [teamDescription, setTeamDescription] = useState("");
+    const [teamDeadline, setTeamDeadline] = useState("");
+    const [teamLeader, setTeamLeader] = useState("");
+    const [teamMembers, setTeamMembers] = useState([]);
+    const [teamData, setTeamData] = useState([]);
+    const [existingProject, setExistingProject] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const navigate = useNavigate();
-    const location = useLocation(); 
-    const Project_id = location.state?.project_id; // Get project ID from state 
+    const { state } = useLocation();
+    const Project_id = state?.project_id;
 
     useEffect(() => {
-        // Fetch team data and project data when the component loads
-        getdata_ProjectCreation1(Project_id)
-            .then((data) => {
-                setTeamData(data.teamMembers); // Always set team members for dropdown
-                console.log("Fetched team data:", data.teamMembers); // Debugging line to check fetched team data
-                console.log("Fetched project data:", data.project); // Debugging line to check fetched project data
-    
-                if (data.project) {
-                    // If the project exists, pre-fill the form with existing project data
-                    setExistingProject(true);
-    
-                    if (teamTitleRef.current && teamDescriptionRef.current && teamDeadlineRef.current) {
-                        teamTitleRef.current.value = data.project.title || "";
-                        teamDescriptionRef.current.value = data.project.description || "";
-                        const formattedDate = format(new Date(data.project.deadline), 'yyyy-MM-dd');
-                        teamDeadlineRef.current.value = formattedDate; 
-                    }
-            
+        const fetchData = async () => {
+            try {
+                const { teamMembers: members, project } = await getdata_ProjectCreation1(Project_id);
+                console.log("Fetched team data:", members);
+                console.log("Fetched project data:", project);
 
-                    if (adminStatus && teamLeaderRef.current) {
-                         teamLeaderRef.current.value = data.project.leader;
-                    }
-       
-    
-                    // Pre-select members in the dropdown
-                    if (teamMembersRef.current) {
-                        const memberIds = data.project.members.map((member) => member.id.toString());
-                        Array.from(teamMembersRef.current.options).forEach((option) => {
-                            if (memberIds.includes(option.value)) {
-                                option.selected = true;
-                            }
-                        });
-                        Array.from(teamMembersRef.current.options).forEach((option) => {
-                            if (option.value === data.project.leader) {
-                                option.disabled = true; // Disable the leader
-                                option.selected = true; // Ensure the leader is selected
-                            } else {
-                                option.disabled = false; // Enable other options
-                            }
-                        });
-                        
-                    }
+                setTeamData(members);
+
+                if (project) {
+                    setExistingProject(true);
+                    setTeamTitle(project.title);
+                    setTeamDescription(project.description);
+                    setTeamDeadline(format(new Date(project.deadline), "yyyy-MM-dd"));
+                    setTeamLeader(project.leader.toString());
+                    setTeamMembers(project.members.map(m => m.id.toString()));
                 } else {
-                    // Handle case when the project does not exist
                     if (adminStatus) {
-                        if (teamLeaderRef.current && teamMembersRef.current) {
-                            const firstLeaderId = data.teamMembers[0].id;
-                            teamLeaderRef.current.value = firstLeaderId;
-    
-                            Array.from(teamMembersRef.current.options).forEach((option) => {
-                                if (option.value === firstLeaderId) {
-                                    option.selected = true;
-                                    option.disabled = true;
-                                }
-                            });
-                        }
+                        const firstId = members[0]?.id?.toString() || "";
+                        setTeamLeader(firstId);
+                        setTeamMembers([firstId]);
                     } else {
-                        if (teamMembersRef.current) {
-                            const currentUserId = Account_id;
-                            Array.from(teamMembersRef.current.options).forEach((option) => {
-                                if (option.value === currentUserId) {
-                                    option.selected = true;
-                                    option.disabled = true;
-                                }
-                            });
-                        }
+                        setTeamMembers([Account_id.toString()]);
                     }
                 }
-    
-                setIsLoading(false); // Data has been loaded
-            })
-            .catch((error) => {
+            } catch (error) {
+                console.error("Fetch error:", error);
                 if (error.message === "Unauthorized") {
-                    console.error("Unauthorized access:", error);
                     alert("Unauthorized access. Please log in again.");
-                    navigate("/login"); // Redirect to login on 401
+                    navigate("/login");
                 } else {
-                    console.error("Error:", error);
                     alert("Error fetching data. Please try again later.");
                 }
-            });
-    }, []);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [Project_id, adminStatus, Account_id, navigate]);
 
     const getTomorrowDate = () => {
-        return format(new Date(Date.now() + 24 * 60 * 60 * 1000), 'yyyy-MM-dd'); // Tomorrow's date
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        return format(tomorrow, "yyyy-MM-dd");
     };
 
-    
-
-    function handleSubmit() {
+    const handleSubmit = async () => {
         if (
-            !teamTitleRef.current.value.trim() ||
-            !teamDescriptionRef.current.value.trim() ||
-            !teamDeadlineRef.current.value ||
-            (adminStatus && !teamLeaderRef.current.value) // Check team leader only if admin
+            !teamTitle.trim() ||
+            !teamDescription.trim() ||
+            !teamDeadline ||
+            (adminStatus && !teamLeader)
         ) {
             alert("Please fill in all fields before submitting.");
             return;
         }
 
-        // Get selected team members
-        const selectedMembers = Array.from(teamMembersRef.current.selectedOptions).map(option => option.value);
-
-        // Ensure the team leader is included in the members list
-        if (adminStatus && teamLeaderRef.current.value) {
-            const leaderId = teamLeaderRef.current.value;
-            if (!selectedMembers.includes(leaderId)) {
-                selectedMembers.push(leaderId);
-            }
-        }
-
-        if (!adminStatus){
-            // If not admin, ensure the current user is included in the members list
-            const currentUserId = Account_id; // Use Account_id from props
-            if (!selectedMembers.includes(currentUserId)) {
-                selectedMembers.push(currentUserId);
-            }
-        }
+        const leaderId = adminStatus ? teamLeader : Account_id.toString();
+        const membersSet = new Set(teamMembers);
+        membersSet.add(leaderId);
 
         const projectData = {
-            title: teamTitleRef.current.value,
-            description: teamDescriptionRef.current.value,
-            deadline: teamDeadlineRef.current.value,
-            members: selectedMembers,
-            leader: adminStatus ? teamLeaderRef.current.value : Account_id, // Include leader from props if not admin
-            id: Project_id
+            title: teamTitle,
+            description: teamDescription,
+            deadline: teamDeadline,
+            members: [...membersSet],
+            leader: leaderId,
+            id: Project_id,
         };
 
-        // Submit the project data
-        submit_ProjectCreation1(projectData)
-            .then((data) => {
-                alert(existingProject ? "Changes saved successfully!" : "Project created successfully!");
-                // Navigate based on whether the project is new or existing
-                if (existingProject) {
-                    navigate(-1); // Navigate to main if editing an existing project
-                } else {
-                    console.log("Project ID:", data); // Log the project ID for debugging
-                    navigate("/create2", {state: { project_id: data.project_id }}); // Navigate to create2 if creating a new project
-                }
-            })
-            .catch((error) => {
-                if (error.message === "Unauthorized") {
-                  console.error("Unauthorized access:", error);
-                  alert("Unauthorized access. Please log in again.");
-                  navigate("/login"); // Redirect to login on 401
-                } else {
-                  console.error("Error:", error);
-                  alert("Error submitting data. Please try again later.");
-                }
-              });
-    }
+        try {
+            const data = await submit_ProjectCreation1(projectData);
+            alert(existingProject ? "Changes saved successfully!" : "Project created successfully!");
+            navigate(existingProject ? -1 : "/create2", {
+                state: { project_id: data.project_id },
+            });
+        } catch (error) {
+            console.error("Submit error:", error);
+            if (error.message === "Unauthorized") {
+                alert("Unauthorized access. Please log in again.");
+                navigate("/login");
+            } else {
+                alert("Error submitting data. Please try again later.");
+            }
+        }
+    };
 
-    if (isLoading) {
-        return <div>Loading...</div>; // Show a loading spinner or placeholder while data is being fetched
-    }
+    if (isLoading) return <div>Loading...</div>;
 
     return (
         <div>
-            {/* Title Input */}
             <div className="mb-3">
                 <label htmlFor="teamTitle" className="form-label">Team Title</label>
                 <input
                     type="text"
                     id="teamTitle"
                     className="form-control"
+                    value={teamTitle}
+                    onChange={(e) => setTeamTitle(e.target.value)}
                     placeholder="Enter team title"
-                    ref={teamTitleRef}
                 />
             </div>
 
-            {/* Description Input */}
             <div className="mb-3">
                 <label htmlFor="teamDescription" className="form-label">Team Description</label>
                 <textarea
                     id="teamDescription"
                     className="form-control"
+                    value={teamDescription}
+                    onChange={(e) => setTeamDescription(e.target.value)}
                     placeholder="Enter team description"
-                    ref={teamDescriptionRef}
                 ></textarea>
             </div>
 
-            {/* Deadline Input */}
             <div className="mb-3">
                 <label htmlFor="teamDeadline" className="form-label">Team Deadline</label>
                 <input
                     type="date"
                     id="teamDeadline"
                     className="form-control"
-                    ref={teamDeadlineRef}
-                    min={getTomorrowDate()} // Set minimum date to tomorrow
+                    value={teamDeadline}
+                    onChange={(e) => setTeamDeadline(e.target.value)}
+                    min={getTomorrowDate()}
                 />
             </div>
 
-            {/* Team Leader Dropdown (Visible only for admins) */}
             {adminStatus && (
                 <div className="mb-3">
                     <label htmlFor="teamLeader" className="form-label">Team Leader</label>
                     <select
                         id="teamLeader"
                         className="form-select"
-                        ref={teamLeaderRef}
-                        onChange={(e) => {
-                            const selectedLeaderId = e.target.value;
-            
-                            // Automatically select the team leader as a team member
-                            Array.from(teamMembersRef.current.options).forEach((option) => {
-                                if (option.value === selectedLeaderId) {
-                                    option.selected = true;
-                                    option.disabled = true; // Disable the team leader option in the team members dropdown
-                                } else {
-                                    option.disabled = false; // Enable other options
-                                    option.selected = false; // Deselect other options
-                                }
-                            });
-                        }}
-
-                        
+                        value={teamLeader}
+                        onChange={(e) => setTeamLeader(e.target.value)}
                     >
-                        {teamData.map((leader) => (
-                            <option key={leader.id} value={leader.id}>
-                                {leader.name}
+                        {teamData.map(({ id, name }) => (
+                            <option key={id} value={id.toString()}>
+                                {name}
                             </option>
                         ))}
                     </select>
                 </div>
             )}
 
-            {/* Team Members Dropdown */}
             <div className="mb-3">
-                <label htmlFor="teamMembers" className="form-label">Team Members, use CTRL to select</label>
+                <label htmlFor="teamMembers" className="form-label">
+                    Team Members (use CTRL to select multiple)
+                </label>
                 <select
                     id="teamMembers"
                     className="form-select"
                     multiple
-                    ref={teamMembersRef}
+                    value={teamMembers}
+                    onChange={(e) =>
+                        setTeamMembers(
+                            Array.from(e.target.selectedOptions, (opt) => opt.value)
+                        )
+                    }
                 >
-                    {teamData.map((member) => (
-                        <option key={member.id} value={member.id}>
-                            {member.name}
+                    {teamData.map(({ id, name }) => (
+                        <option key={id} value={id.toString()}>
+                            {name}
                         </option>
                     ))}
                 </select>
             </div>
 
-            
-
-            {/* Finish Button */}
             <div className="mb-3">
                 <button className="btn btn-primary" onClick={handleSubmit}>
                     {existingProject ? "Save Changes" : "Create Project"}
@@ -274,7 +196,7 @@ function ProjectCreation1({ adminStatus, Account_id }) {
 
             <div className="mb-3">
                 <button className="btn btn-danger" onClick={() => navigate(-1)}>
-                    Go back
+                    Go Back
                 </button>
             </div>
         </div>

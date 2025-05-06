@@ -5,22 +5,23 @@
 
 # Info o reportovanej verzii:  
 <!-- Upraviť podľa aktuálneho týždňa, reporty začínajú 4. týždeň semestra. Upraviť aj názov reportu. -->
-- Tag: week9                      
-- Obdobie: 9. týždeň, 14.4. - 20.4.2025 
+- Tag: week10-11                       
+- Obdobie: 10-11. týždeň, 21.4. - 6.4.2025 
 
 # Plán:
 <!-- Skopírovať z predchádzajúceho reportu časť "Plán na ďalší týždeň" resp. pre prvý report z plánu zo špecifikácie -->
-- dokoncit komunikaciu pre register a login spolu so Session Cookie
-- urobit funkcie na vsetky komunikácie, ktoré sa budú používať - mock
-- Spraviť react komponenty podľa toho čo stihnem do bety
+Dokončiť:
+- zobrazenie hlavnej stránky spolu s projektami ako team leader a member
+- zobrazenie stránky projektu s priradenými, nepriradenými assigmentmi
+- reportovanie dokončenia assignmentu a bugov
+- spolu podla toho ci je admin alebo nie - zobrazenie stranok
 
 # Vykonaná práca:
 <!-- Ku každému bodu je nutné priradiť číslo commitu, ktorý ho implementuje - samostatný commit pre každý bod! -->
+Update - 858d5f85970a2d51ba88c505e9843843c760b5b5
+Update - 71852c6dd1ba6dbeabdd0b534713ff4b8b7d3b81
 
-- Registration implemented, Login through Session implemented, BE-FE, database; functional  - 6b3e449d6575e47f2415bc57b85d1af0c4561d96
-- Authenticate at the start of application, Authenticate protected routes - 2d921c5f1fede4648dca29a2d0699224f57a7953
-- ProjectCreation1 file with DB communication and admin implementation - 77b8fb2028c82ab2ed0a82e8fd6cf48a4235994f
-- Project Creation Assignment - ProjectCreation1, ProjectCreation2 Admin Editation Functional FE-BE with api calls on backend - b747758f079b57cebeb0dfb5dc67d83fc01f56f7
+
  
 
 
@@ -34,15 +35,14 @@
 
 # Plán na ďalší týždeň:
 <!-- Skombinovať plán zo špecifikácie spolu s potenciálnym oneskorením / predbehnutím plánu v minulých týždňoch -->
-Dokončiť:
-- zobrazenie hlavnej stránky spolu s projektami ako team leader a member
-- zobrazenie stránky projektu s priradenými, nepriradenými assigmentmi, všetky
-- reportovanie dokončenia assignmentu a bugov
-- spolu podla toho ci je admin alebo nie - zobrazenie stranok
+- bug fixy, hlavne problemy s casom z BE do FE kvoli casovemu pasmu
+- mozno pridat dalsie rozdelenie na projekty kde je member a nie team leader, takisto na dokoncene assignmenty
+- urobit kod na updatovanie databazy podla casu
+- notifikacny system cez email
 
 # Problémy:
 <!-- Popísať akékoľvek problémy, s ktorými ste sa stretli. Ak neboli žiadne, explicitne to uveďte. -->
-
+-bug fixy
 
 
 # Zmeny v špecifikácii:
