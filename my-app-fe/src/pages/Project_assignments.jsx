@@ -91,8 +91,9 @@ function Project_assignments({ adminStatus, Account_id }) {
     };
 
     const normalizeDate = (date) => {
+        if (!date) return null;
         const normalized = new Date(date);
-        normalized.setHours(0, 0, 0, 0);
+        normalized.setHours(0, 0, 0, 0); // Set time to midnight
         return normalized;
     };
 
@@ -111,9 +112,9 @@ function Project_assignments({ adminStatus, Account_id }) {
                 : true;
             const matchesFinishedDate = filters.finishedDate
                 ? assignment.finished_time &&
-                  normalizeDate(assignment.finished_time) === normalizeDate(filters.finishedDate)
+                  normalizeDate(assignment.finished_time).getTime() === normalizeDate(filters.finishedDate).getTime()
                 : true;
-
+    
             return (
                 matchesSearch &&
                 matchesStatus &&
@@ -286,6 +287,7 @@ function Project_assignments({ adminStatus, Account_id }) {
                                         <strong>Description:</strong> {assignment.assignment_description} <br />
                                         <strong>Start Time:</strong> {new Date(assignment.start_time).toLocaleDateString()} <br />
                                         <strong>End Time:</strong> {new Date(assignment.end_time).toLocaleDateString()} <br />
+                                        <strong>Finished Time:</strong> {assignment.finished_time ? new Date(assignment.finished_time).toLocaleDateString() : "Not Finished"} <br />
                                         <strong>Priority:</strong> {assignment.priority_name} <br />
                                         <strong>Status:</strong> {assignment.status_name}
                                     </li>
@@ -390,6 +392,7 @@ function Project_assignments({ adminStatus, Account_id }) {
                                         <strong>Description:</strong> {assignment.assignment_description} <br />
                                         <strong>Start Time:</strong> {new Date(assignment.start_time).toLocaleDateString()} <br />
                                         <strong>End Time:</strong> {new Date(assignment.end_time).toLocaleDateString()} <br />
+                                        <strong>Finished Time:</strong> {assignment.finished_time ? new Date(assignment.finished_time).toLocaleDateString() : "Not Finished"} <br />
                                         <strong>Priority:</strong> {assignment.priority_name} <br />
                                         <strong>Status:</strong> {assignment.status_name}
                                     </li>
@@ -496,6 +499,7 @@ function Project_assignments({ adminStatus, Account_id }) {
                                     <strong>Description:</strong> {assignment.assignment_description} <br />
                                     <strong>Start Time:</strong> {new Date(assignment.start_time).toLocaleDateString()} <br />
                                     <strong>End Time:</strong> {new Date(assignment.end_time).toLocaleDateString()} <br />
+                                    <strong>Finished Time:</strong> {assignment.finished_time ? new Date(assignment.finished_time).toLocaleDateString() : "Not Finished"} <br />
                                     <strong>Priority:</strong> {assignment.priority_name} <br />
                                     <strong>Status:</strong> {assignment.status_name}
                                 </li>

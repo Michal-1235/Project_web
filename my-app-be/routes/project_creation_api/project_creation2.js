@@ -32,21 +32,20 @@ router.get('/', async (req, res) => {
     }
 });
 
-
 // POST: Submit (create or update) assignments for a project
 router.post('/', async (req, res) => {
     try {
         if (!req.session.Account_Id) {
             return res.status(401).json({ error: "Unauthorized" });
         }
-
+        
         const { project_id, assignments } = req.body;
-
         if (!project_id || !assignments) {
             return res.status(400).json({ error: "Missing project_id or assignments in request body" });
         }
 
-        const result = await createOrUpdateAssignments(project_id, assignments);
+        // Pass arguments in the correct order
+        const result = await createOrUpdateAssignments(assignments, project_id);
         return res.status(200).json({ message: "Assignments submitted successfully", result });
     } catch (err) {
         console.error("Error submitting assignments:", err);

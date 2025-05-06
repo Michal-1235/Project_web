@@ -11,14 +11,14 @@ router.get('/', async (req, res) => {
         }
 
         const { project_id } = req.query;
-        console.log(project_id);
+
         if (project_id) {
-            // Fetch project details along with members
+            // Fetch project details along with its members
             const project = await getProject(project_id);
-            const members = await getUsers();
+            const members = await getUsers(); // Fetch all accounts (non-admins)
             return res.status(200).json({ project: project.rows[0], teamMembers: members.rows });
         } else {
-            // Fetch only members
+            // Fetch only accounts (non-admins)
             const members = await getUsers();
             return res.status(200).json({ project: null, teamMembers: members.rows });
         }
@@ -36,16 +36,18 @@ router.post('/', async (req, res) => {
         }
 
         const { id: project_id, title, description, deadline, members, leader } = req.body;
-        
+        console.log("Received data:", req.body);
 
         // If leader is null, set it to the Account_Id from the session
         const projectLeader = leader || req.session.Account_Id;
         if (project_id) {
             // Update an existing project
+            console.log("Updating project:", project_id);
             const result = await updateProject({ project_id, title, description, deadline, members, projectLeader });
             return res.status(200).json(result);
         } else {
             // Create a new project
+            console.log("Creating new project:", title);
             const result = await createProject({ title, description, deadline, members, projectLeader });
             return res.status(201).json(result);
         }

@@ -10,18 +10,28 @@ exports.getUsers = async function () {
     return pool.query(query);
 };
 
-// Fetch project details by project_id
+// Fetch project details by project_id, including its members
 exports.getProject = async function (project_id) {
     const query = `
         SELECT 
-            "Project_id" AS id,
-            "project_title" AS title,
-            "project_description" AS description,
-            "start_time" AS start_time,
-            "end_time" AS deadline,
-            "Account_id" AS leader
-        FROM "public"."Project"
-        WHERE "Project_id" = $1
+            p."Project_id" AS id,
+            p."project_title" AS title,
+            p."project_description" AS description,
+            p."end_time" AS deadline,
+            p."Account_id" AS leader,
+            JSON_AGG(
+                JSON_BUILD_OBJECT(
+                    'id', a."Account_id",
+                    'name', a."username"
+                )
+            ) AS members
+        FROM "public"."Project" p
+        LEFT JOIN "public"."ProjectTeamMember" ptm
+        ON p."Project_id" = ptm."Project_id"
+        LEFT JOIN "public"."Account" a
+        ON ptm."Account_id" = a."Account_id"
+        WHERE p."Project_id" = $1
+        GROUP BY p."Project_id"
     `;
     return pool.query(query, [project_id]);
 };
@@ -65,6 +75,32 @@ exports.updateProject = async function ({ project_id, title, description, deadli
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
+
+        // Fetch current members of the project
+        const currentMembersQuery = `
+            SELECT "Account_id"
+            FROM "public"."ProjectTeamMember"
+            WHERE "Project_id" = $1
+        `;
+        const currentMembersResult = await client.query(currentMembersQuery, [project_id]);
+        const currentMembers = currentMembersResult.rows.map(row => row.Account_id);
+
+        // Determine members to be removed
+        const membersToRemove = currentMembers.filter(member => !members.includes(member));
+
+        // Delete removed members from AssignmentMember table
+        if (membersToRemove.length > 0) {
+            const deleteAssignmentMembersQuery = `
+                DELETE FROM "public"."AssignmentMember"
+                WHERE "Project_Team_Member_id" IN (
+                    SELECT "Project_Team_Member_id"
+                    FROM "public"."ProjectTeamMember"
+                    WHERE "Account_id" = ANY($1::BIGINT[])
+                    AND "Project_id" = $2
+                )
+            `;
+            await client.query(deleteAssignmentMembersQuery, [membersToRemove, project_id]);
+        }
 
         // Update Project table
         const projectQuery = `

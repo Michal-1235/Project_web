@@ -12,6 +12,7 @@ import {
 function formatDateToInput(dateString) {
     if (!dateString) return '';
     const date = new Date(dateString);
+    date.setHours(date.getHours() + 2); // Add two hours to the date
     return date.toISOString().split('T')[0]; // Converts to "yyyy-MM-dd"
 }
 
@@ -28,6 +29,7 @@ function Assignment({ adminStatus, Account_id }) {
     const [projectMembers, setProjectMembers] = useState([]);
     const [isTeamLeader, setIsTeamLeader] = useState(false); 
     const [hasTakenAssignment, setHasTakenAssignment] = useState(false);
+    const [projectDeadline, setProjectDeadline] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -58,7 +60,14 @@ function Assignment({ adminStatus, Account_id }) {
                 }
     
                 setProjectMembers(membersData);
-                setIsTeamLeader(projectDetails.leader_id === Account_id); // Check if the user is the Team Leader
+    
+                // Set the project deadline
+                if (assignmentData.project_deadline) {
+                    setProjectDeadline(formatDateToInput(assignmentData.project_deadline));
+                }
+    
+                // Check if the current user is the team leader
+                setIsTeamLeader(projectDetails.leader_id === Account_id);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -70,9 +79,21 @@ function Assignment({ adminStatus, Account_id }) {
     useEffect(() => {
         console.log('Updated editableMembers:', editableMembers);
         console.log('Updated projectMembers:', projectMembers);
+        if (assignment) {
+        console.log(assignment.finished_time,isTeamLeader,adminStatus )
+        }
     }, [editableMembers,projectMembers]);
   
     const handleSave = async () => {
+        // Validate that the deadline does not exceed the project deadline (except for bugs)
+        if (
+            assignment.assignment_type !== "Bug" &&
+            editableDeadline > projectDeadline
+        ) {
+            alert("The deadline cannot exceed the project deadline.");
+            return;
+        }
+    
         try {
             const updatedAssignment = {
                 assignment_title: editableTitle,
@@ -80,15 +101,20 @@ function Assignment({ adminStatus, Account_id }) {
                 end_time: editableDeadline,
                 members: editableMembers.map((id) => parseInt(id, 10)), // Convert to array of integers
             };
-            console.log('Saving assignment:', updatedAssignment); // Debugging line
+            console.log("Saving assignment:", updatedAssignment); // Debugging line
             await saveAssignment(Assignment_id, updatedAssignment);
-            navigate('/project', { state: { project_id } });
+            navigate("/project", { state: { project_id } });
         } catch (error) {
-            console.error('Error saving assignment:', error);
+            console.error("Error saving assignment:", error);
         }
     };
 
     const handleReportCompletion = async () => {
+        const confirmCompletion = window.confirm("Are you sure you want to complete this assignment?");
+        if (!confirmCompletion) {
+            return; // Exit if the user cancels
+        }
+    
         try {
             await reportAssignmentCompletion(Assignment_id);
             navigate('/project', { state: { project_id } });
@@ -139,16 +165,17 @@ function Assignment({ adminStatus, Account_id }) {
                 </div>
             </div>
             <div className="row mt-4">
-                <div className="col-md-6">
-                    <label>Deadline</label>
-                    <input
-                        type="date"
-                        className="form-control"
-                        value={formatDateToInput(editableDeadline)}
-                        onChange={(e) => setEditableDeadline(e.target.value)}
-                        disabled={!!assignment.finished_time || (!isTeamLeader && !adminStatus)}
-                    />
-                </div>
+            <div className="col-md-6">
+                <label>Deadline</label>
+                <input
+                    type="date"
+                    className="form-control"
+                    value={editableDeadline}
+                    onChange={(e) => setEditableDeadline(e.target.value)}
+                    max={assignment.assignment_type !== "Bug" ? projectDeadline : ""}
+                    disabled={!!assignment.finished_time || (!isTeamLeader && !adminStatus)}
+                />
+            </div>
                 <div className="col-md-6">
                     <label>Assignment Members</label>
                     <select
@@ -203,11 +230,13 @@ function Assignment({ adminStatus, Account_id }) {
                 </div>
             </div>
             <div className="row mt-5">
-            <div className="col-auto">
-                <button className="btn btn-primary" onClick={handleSave}>
-                    Finish Edit
-                </button>
-            </div>
+            { (isTeamLeader || adminStatus) && (
+                <div className="col-auto">
+                    <button className="btn btn-primary" onClick={handleSave}>
+                        Finish Edit
+                    </button>
+                </div>
+            )}
             {!adminStatus && !hasTakenAssignment && assignment.status_name !== 'Finished In Time' && assignment.status_name !== 'Finished After Deadline' && (
                 <div className="col-auto">
                     <button className="btn btn-success" onClick={handleTakeAssignment}>
@@ -218,7 +247,7 @@ function Assignment({ adminStatus, Account_id }) {
             {!adminStatus && hasTakenAssignment && assignment.status_name !== 'Finished In Time' && assignment.status_name !== 'Finished After Deadline' && (
                 <div className="col-auto">
                     <button className="btn btn-warning" onClick={handleReportCompletion}>
-                        Report Completion
+                        Complete assignment
                     </button>
                 </div>
             )}

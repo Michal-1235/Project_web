@@ -56,7 +56,7 @@ function BugReport() {
     try {
       await submitBugReport(project_id, Assignment_id, bugData); 
       alert("Bug report submitted successfully.");
-      navigate("/main");
+      navigate(-1);
     } catch (error) {
       console.error("Error submitting bug report:", error);
       alert("Failed to submit bug report.");

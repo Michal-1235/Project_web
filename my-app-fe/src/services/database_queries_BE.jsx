@@ -358,6 +358,10 @@ function fetchAssignmentDetails(assignmentId) {
             if (!response.ok) throw new Error('Failed to fetch assignment details');
             return response.json();
         })
+        .then((data) => {
+            console.log('Fetched assignment details:', data);
+            return data; // Includes project_deadline
+        })
         .catch((error) => {
             console.error('Error fetching assignment details:', error);
             throw error;

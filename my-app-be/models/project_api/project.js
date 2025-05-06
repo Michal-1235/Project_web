@@ -125,6 +125,7 @@ async function fetchAssignmentDetails(assignmentId) {
             a."finished_time",
             p."priority" AS priority_name,
             s."status" AS status_name,
+            pr."end_time" AS project_deadline,
             (
                 SELECT STRING_AGG(DISTINCT ptm."Account_id"::TEXT, ', ')
                 FROM "public"."AssignmentMember" am
@@ -135,6 +136,7 @@ async function fetchAssignmentDetails(assignmentId) {
         JOIN "public"."Priority" p ON a."Priority_id" = p."Priority_id"
         JOIN "public"."Status" s ON a."Status_id" = s."Status_id"
         JOIN "public"."AssignmentType" at ON a."Type_id" = at."Type_id"
+        JOIN "public"."Project" pr ON a."Project_id" = pr."Project_id" -- Join with Project table
         WHERE a."Assignment_id" = $1
     `;
     const result = await pool.query(query, [assignmentId]);
