@@ -230,7 +230,7 @@ function Assignment({ adminStatus, Account_id }) {
                 </div>
             </div>
             <div className="row mt-5">
-            { (isTeamLeader || adminStatus) && (
+            { (isTeamLeader || adminStatus) && assignment.status_name !== 'Finished In Time' && assignment.status_name !== 'Finished After Deadline' && (
                 <div className="col-auto">
                     <button className="btn btn-primary" onClick={handleSave}>
                         Finish Edit
